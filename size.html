@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Size Converter</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+    .section { margin-bottom: 20px; }
+    label { display: block; margin: 6px 0 2px; }
+    input { width: 100%; padding: 8px; }
+    select, button { padding: 8px; width: 100%; margin-top: 6px; }
+    .result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Clothing Size Converter</h2>
+  <div class="section">
+    <label for="gender">Category:</label>
+    <select id="gender">
+      <option value="women">Women</option>
+    </select>
+    <label for="measurement">Unit:</label>
+    <select id="unit">
+      <option value="cm">Centimeters</option>
+    </select>
+    <label for="bust">Bust / Chest (cm):</label>
+    <input id="bust" type="number">
+    <label for="waist">Waist (cm):</label>
+    <input id="waist" type="number">
+    <label for="hips">Hips (cm, optional):</label>
+    <input id="hips" type="number">
+    <button id="convertBtn">Convert Sizes</button>
+  </div>
+  <div class="result" id="result"></div>
+
+  <script>
+    const sizeData = {
+      hm: {
+        tops: [
+          { size: 'S', bustMax: 34.5, waistMax: 28.5 },
+          { size: 'M', bustMax: 37.75, waistMax: 31.5 },
+          { size: 'L', bustMax: 41, waistMax: 34.5 }
+        ],
+        bottoms: [
+          { size: 'S', waistMax: 25.25, hipsMax: 34.5 },
+          { size: 'M', waistMax: 28.5, hipsMax: 37.75 },
+          { size: 'L', waistMax: 31.5, hipsMax: 41 }
+        ]
+      },
+      zara: {
+        tops: [
+          { size: 'S', bustMax: 34, waistMax: 26 },
+          { size: 'M', bustMax: 35.5, waistMax: 27.5 },
+          { size: 'L', bustMax: 37.75, waistMax: 30 },
+          { size: 'XL', bustMax: 40.25, waistMax: 32.25 }
+        ],
+        bottoms: [
+          { size: 'S', waistMax: 26, hipsMax: 37 },
+          { size: 'M', waistMax: 27.5, hipsMax: 38.5 },
+          { size: 'L', waistMax: 30, hipsMax: 41 },
+          { size: 'XL', waistMax: 32.25, hipsMax: 43.25 }
+        ]
+      }
+    };
+
+    document.getElementById('convertBtn').onclick = () => {
+      const bust = parseFloat(document.getElementById('bust').value) || 0;
+      const waist = parseFloat(document.getElementById('waist').value) || 0;
+      const hips = parseFloat(document.getElementById('hips').value) || 0;
+
+      function findSize(brand, part) {
+        return sizeData[brand][part]
+          .find(s => (part === 'tops'
+                       ? bust <= s.bustMax && waist <= s.waistMax
+                       : waist <= s.waistMax && (hips ? hips <= s.hipsMax : true)))
+          ?.size || 'No match';
+      }
+
+      const result = `
+        H&M Top: ${findSize('hm','tops')}, Bottom: ${findSize('hm','bottoms')}<br>
+        Zara Top: ${findSize('zara','tops')}, Bottom: ${findSize('zara','bottoms')}
+      `;
+      document.getElementById('result').innerHTML = result;
+    };
+  </script>
+</body>
+</html>
